@@ -14,10 +14,10 @@ module.exports = class UberHandler {
       }
     });
 
-    this.getPrice = this.getPrice.bind(this);
+    this.getMotorBikePrice = this.getMotorBikePrice.bind(this);
   }
 
-  getPrice(start, end) {
+  getMotorBikePrice(start, end) {
     const payload = {
       start_latitude: start.lat,
       start_longitude: start.long,
@@ -40,7 +40,6 @@ module.exports = class UberHandler {
             low: uberMotor.low_estimate
           }
         };
-      })
-      .catch(err => err);
+      });
   }
 };

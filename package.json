@@ -4,12 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "np"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.17.0",
     "query-string": "^5.0.1"
+  },
+  "devDependencies": {
+    "np": "^2.16.0"
   }
 }
