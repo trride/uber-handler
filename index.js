@@ -24,6 +24,7 @@ module.exports = class UberHandler {
     this.getDriverEstimatedTimeOfArrival = this.getDriverEstimatedTimeOfArrival.bind(
       this
     );
+    this.getRequestsEstimate = this.getRequestsEstimate.bind(this);
   }
 
   getMotorBikePrice(start = {}, end = {}) {
@@ -65,5 +66,23 @@ module.exports = class UberHandler {
           estimate: response.data.times[0].estimate
         };
       });
+  }
+
+  getRequestsEstimate(auth, start = {}, end = {}) {
+    const payload = {
+      product_id: this.uberMotorProductId,
+      start_latitude: start.lat,
+      start_longitude: start.long,
+      end_latitude: end.lat,
+      end_longitude: end.long
+    };
+
+    return this.axios
+      .post("/requests/estimate", payload, {
+        headers: {
+          Authorization: `Bearer ${auth}`
+        }
+      })
+      .then(response => response.data);
   }
 };
