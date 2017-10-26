@@ -5,6 +5,8 @@ module.exports = class UberHandler {
   constructor(config) {
     this.token = config.token || "";
 
+    this.uberMotorProductId = "89da0988-cb4f-4c85-b84f-aac2f5115068";
+
     this.axios = Axios.create({
       baseURL: "https://api.uber.com/v1.2",
       headers: {
@@ -15,9 +17,12 @@ module.exports = class UberHandler {
     });
 
     this.getMotorBikePrice = this.getMotorBikePrice.bind(this);
+    this.getDriverEstimatedTimeOfArrival = this.getDriverEstimatedTimeOfArrival.bind(
+      this
+    );
   }
 
-  getMotorBikePrice(start, end) {
+  getMotorBikePrice(start = {}, end = {}) {
     const payload = {
       start_latitude: start.lat,
       start_longitude: start.long,
@@ -28,9 +33,8 @@ module.exports = class UberHandler {
     return this.axios
       .get(`/estimates/price?${queryString.stringify(payload)}`)
       .then(response => {
-        const uberMotorProductId = "89da0988-cb4f-4c85-b84f-aac2f5115068"; //uberMotor
         const uberMotor = response.data.prices.filter(
-          item => item.product_id == uberMotorProductId
+          item => item.product_id == this.uberMotorProductId
         )[0];
 
         return {
@@ -39,6 +43,22 @@ module.exports = class UberHandler {
             high: uberMotor.high_estimate,
             low: uberMotor.low_estimate
           }
+        };
+      });
+  }
+
+  getDriverEstimatedTimeOfArrival(start = {}) {
+    const payload = {
+      start_latitude: start.lat,
+      start_longitude: start.long,
+      product_id: this.uberMotorProductId
+    };
+
+    return this.axios
+      .get(`/estimates/time?${queryString.stringify(payload)}`)
+      .then(response => {
+        return {
+          estimate: response.data.times[0].estimate
         };
       });
   }
