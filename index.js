@@ -4,11 +4,15 @@ const queryString = require("query-string");
 module.exports = class UberHandler {
   constructor(config) {
     this.token = config.token || "";
+    this.sandbox = config.sandbox || false;
+    this.baseURL = this.sandbox
+      ? "https://sandbox-api.uber.com"
+      : "https://api.uber.com";
 
     this.uberMotorProductId = "89da0988-cb4f-4c85-b84f-aac2f5115068";
 
     this.axios = Axios.create({
-      baseURL: "https://api.uber.com/v1.2",
+      baseURL: this.baseURL + "/v1.2",
       headers: {
         Authorization: `Token ${this.token}`,
         "Content-Type": "application/json",
