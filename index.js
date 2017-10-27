@@ -25,6 +25,7 @@ module.exports = class UberHandler {
       this
     );
     this.getRequestsEstimate = this.getRequestsEstimate.bind(this);
+    this.requestRide = this.requestRide.bind(this);
   }
 
   getMotorBikePrice(start = {}, end = {}) {
@@ -79,6 +80,25 @@ module.exports = class UberHandler {
 
     return this.axios
       .post("/requests/estimate", payload, {
+        headers: {
+          Authorization: `Bearer ${auth}`
+        }
+      })
+      .then(response => response.data);
+  }
+
+  requestRide(auth, fare_id, start = {}, end = {}) {
+    const payload = {
+      fare_id,
+      product_id: this.uberMotorProductId,
+      start_latitude: start.lat,
+      start_longitude: start.long,
+      end_latitude: end.lat,
+      end_longitude: end.long
+    };
+
+    return this.axios
+      .post("/requests", payload, {
         headers: {
           Authorization: `Bearer ${auth}`
         }
