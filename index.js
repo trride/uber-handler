@@ -4,6 +4,7 @@ const queryString = require("query-string");
 module.exports = class UberHandler {
   constructor(config) {
     this.token = config.token || "";
+    this.access_token = config.access_token || "";
     this.sandbox = config.sandbox || false;
     this.baseURL = this.sandbox
       ? "https://sandbox-api.uber.com"
@@ -14,7 +15,7 @@ module.exports = class UberHandler {
     this.axios = Axios.create({
       baseURL: this.baseURL + "/v1.2",
       headers: {
-        Authorization: `Token ${this.token}`,
+        Authorization: `Bearer ${this.access_token}`,
         "Content-Type": "application/json",
         "Accept-Language": "en_US"
       }
@@ -30,27 +31,30 @@ module.exports = class UberHandler {
 
   getMotorBikePrice(start = {}, end = {}) {
     const payload = {
+      product_id: this.uberMotorProductId,
       start_latitude: start.lat,
       start_longitude: start.long,
       end_latitude: end.lat,
       end_longitude: end.long
     };
 
-    return this.axios
-      .get(`/estimates/price?${queryString.stringify(payload)}`)
-      .then(response => {
-        const uberMotor = response.data.prices.filter(
-          item => item.product_id == this.uberMotorProductId
-        )[0];
+    return this.axios.post(`/requests/estimate`, payload).then(response => {
+      const { data } = response;
 
-        return {
-          price: {
-            fixed: uberMotor.high_estimate == uberMotor.low_estimate,
-            high: uberMotor.high_estimate,
-            low: uberMotor.low_estimate
-          }
-        };
-      });
+      const price = {
+        high: data.estimate ? data.estimate.high_estimate : data.fare.value,
+        low: data.estimate ? data.estimate.low_estimate : data.fare.value
+      };
+
+      return {
+        price: {
+          ...price,
+          fixed: price.high == price.low,
+          fare_id: data.fare.fare_id,
+          expires_at: data.fare.expires_at
+        }
+      };
+    });
   }
 
   getDriverEstimatedTimeOfArrival(start = {}) {
@@ -69,25 +73,7 @@ module.exports = class UberHandler {
       });
   }
 
-  getRequestsEstimate(auth, start = {}, end = {}) {
-    const payload = {
-      product_id: this.uberMotorProductId,
-      start_latitude: start.lat,
-      start_longitude: start.long,
-      end_latitude: end.lat,
-      end_longitude: end.long
-    };
-
-    return this.axios
-      .post("/requests/estimate", payload, {
-        headers: {
-          Authorization: `Bearer ${auth}`
-        }
-      })
-      .then(response => response.data);
-  }
-
-  requestRide(auth, fare_id, start = {}, end = {}) {
+  requestRide(fare_id, start = {}, end = {}) {
     const payload = {
       fare_id,
       product_id: this.uberMotorProductId,
@@ -98,11 +84,7 @@ module.exports = class UberHandler {
     };
 
     return this.axios
-      .post("/requests", payload, {
-        headers: {
-          Authorization: `Bearer ${auth}`
-        }
-      })
+      .post("/requests", payload)
       .then(response => response.data);
   }
 };
