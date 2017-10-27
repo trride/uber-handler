@@ -21,15 +21,14 @@ module.exports = class UberHandler {
       }
     });
 
-    this.getMotorBikePrice = this.getMotorBikePrice.bind(this);
+    this.getRequestEstimate = this.getRequestEstimate.bind(this);
     this.getDriverEstimatedTimeOfArrival = this.getDriverEstimatedTimeOfArrival.bind(
       this
     );
-    this.getRequestsEstimate = this.getRequestsEstimate.bind(this);
     this.requestRide = this.requestRide.bind(this);
   }
 
-  getMotorBikePrice(start = {}, end = {}) {
+  getRequestEstimate(start = {}, end = {}) {
     const payload = {
       product_id: this.uberMotorProductId,
       start_latitude: start.lat,
