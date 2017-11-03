@@ -96,7 +96,7 @@ module.exports = class UberHandler {
       .delete(`/requests/current`)
       .then(response => {
         return {
-          success: true
+          cancelled: true
         }
       })
   }
