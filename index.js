@@ -21,14 +21,15 @@ module.exports = class UberHandler {
       }
     });
 
-    this.getRequestEstimate = this.getRequestEstimate.bind(this);
+    this.getEstimate = this.getEstimate.bind(this);
     this.getDriverEstimatedTimeOfArrival = this.getDriverEstimatedTimeOfArrival.bind(
       this
     );
     this.requestRide = this.requestRide.bind(this);
+    this.cancelRide = this.cancelRide.bind(this)
   }
 
-  getRequestEstimate(start = {}, end = {}) {
+  getEstimate(start = {}, end = {}) {
     const payload = {
       product_id: this.uberMotorProductId,
       start_latitude: start.lat,
@@ -46,11 +47,10 @@ module.exports = class UberHandler {
       };
 
       return {
-        price: {
-          ...price,
-          fixed: price.high == price.low,
-          fare_id: data.fare.fare_id,
-          expires_at: data.fare.expires_at
+        price: data.fare.value,
+        requestKey: {
+          key: data.fare.fare_id,
+          expiresAt: data.fare.expires_at
         }
       };
     });
@@ -74,7 +74,7 @@ module.exports = class UberHandler {
 
   requestRide(fare_id, start = {}, end = {}) {
     const payload = {
-      fare_id,
+      fare_id: fare_id,
       product_id: this.uberMotorProductId,
       start_latitude: start.lat,
       start_longitude: start.long,
@@ -83,7 +83,21 @@ module.exports = class UberHandler {
     };
 
     return this.axios
-      .post("/requests", payload)
-      .then(response => response.data);
+      .post('/requests', payload)
+      .then(response => {
+        return {
+          requestId: "null"
+        }
+      });
+  }
+
+  cancelRide(requestId) {
+    return this.axios
+      .delete(`/requests/current`)
+      .then(response => {
+        return {
+          success: true
+        }
+      })
   }
 };
