@@ -50,7 +50,7 @@ module.exports = class UberHandler {
         price: data.fare.value,
         requestKey: {
           key: data.fare.fare_id,
-          expiresAt: data.fare.expires_at
+          expiresAt: data.fare.expires_at * 1000
         }
       };
     });
