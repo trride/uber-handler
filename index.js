@@ -26,7 +26,8 @@ module.exports = class UberHandler {
       this
     );
     this.requestRide = this.requestRide.bind(this);
-    this.cancelRide = this.cancelRide.bind(this)
+    this.cancelRide = this.cancelRide.bind(this);
+    this.cancelCurrentRide = this.cancelCurrentRide.bind(this);
   }
 
   getEstimate(start = {}, end = {}) {
@@ -86,14 +87,24 @@ module.exports = class UberHandler {
       .post('/requests', payload)
       .then(response => {
         return {
-          requestId: "null"
+          requestId: response.data.request_id
         }
       });
   }
 
+  cancelCurrentRide() {
+    return this.axios
+    .delete("/requests/current")
+    .then(response => {
+      return {
+        cancelled: true
+      }
+    })
+  }
+
   cancelRide(requestId) {
     return this.axios
-      .delete(`/requests/current`)
+      .delete(`/requests/${requestId}`)
       .then(response => {
         return {
           cancelled: true
