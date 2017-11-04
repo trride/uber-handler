@@ -124,8 +124,20 @@ module.exports = class UberHandler {
           status: 'processing',
           ...payload
         },
+        'no_drivers_available': {
+          status: 'not_found',
+          ...payload
+        }
         'accepted': {
           status: 'accepted',
+          ...payload
+        },
+        'driver_canceled': {
+          status: 'canceled',
+          ...payload
+        },
+        'rider_canceled': {
+          status: 'canceled',
           ...payload
         },
         'in_progress': {
@@ -148,7 +160,7 @@ module.exports = class UberHandler {
     .then(response => {
       return {
         service: this.service_name,
-        cancelled: true
+        canceled: true
       }
     })
   }
@@ -159,7 +171,7 @@ module.exports = class UberHandler {
       .then(response => {
         return {
           service: this.service_name,
-          cancelled: true
+          canceled: true
         }
       })
   }
