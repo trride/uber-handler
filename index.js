@@ -3,6 +3,7 @@ const queryString = require("query-string");
 
 module.exports = class UberHandler {
   constructor(config) {
+    this.service_name = "uber";
     this.token = config.token || "";
     this.access_token = config.access_token || "";
     this.sandbox = config.sandbox || false;
@@ -28,6 +29,7 @@ module.exports = class UberHandler {
     this.requestRide = this.requestRide.bind(this);
     this.cancelRide = this.cancelRide.bind(this);
     this.cancelCurrentRide = this.cancelCurrentRide.bind(this);
+    this.rideStatus = this.rideStatus.bind(this);
   }
 
   getEstimate(start = {}, end = {}) {
@@ -48,6 +50,7 @@ module.exports = class UberHandler {
       };
 
       return {
+        service: this.service_name,
         price: data.fare.value,
         requestKey: {
           key: data.fare.fare_id,
@@ -87,9 +90,56 @@ module.exports = class UberHandler {
       .post('/requests', payload)
       .then(response => {
         return {
+          service: this.service_name,
           requestId: response.data.request_id
         }
       });
+  }
+
+  rideStatus(requestId) {
+    return this.axios
+    .get(`/requests/${requestId}`)
+    .then(response => {
+      const { data } = response
+      
+      const driver = data.driver && data.vehicle && {
+        name: data.driver.name,
+        rating: data.driver.rating,
+        pictureUrl: data.driver.picture_url,
+        phoneNumber: data.driver.phone_number,
+        vehicle: {
+          plate: data.vehicle.licence_plate,
+          name: data.vehicle.make + data.vehicle.model
+        }
+      }
+
+      const payload = {
+        service: this.service_name,
+        requestId: data.request_id,
+        driver
+      }
+
+      const result = {
+        'processing': {
+          status: 'processing',
+          ...payload
+        },
+        'accepted': {
+          status: 'accepted',
+          ...payload
+        },
+        'in_progress': {
+          status: 'on_the_way',
+          ...payload
+        },
+        'completed': {
+          status: 'completed',
+          ...payload
+        }
+      }
+
+      return result[data.status]
+    })
   }
 
   cancelCurrentRide() {
@@ -97,6 +147,7 @@ module.exports = class UberHandler {
     .delete("/requests/current")
     .then(response => {
       return {
+        service: this.service_name,
         cancelled: true
       }
     })
@@ -107,6 +158,7 @@ module.exports = class UberHandler {
       .delete(`/requests/${requestId}`)
       .then(response => {
         return {
+          service: this.service_name,
           cancelled: true
         }
       })
