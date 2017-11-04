@@ -108,7 +108,7 @@ module.exports = class UberHandler {
         pictureUrl: data.driver.picture_url,
         phoneNumber: data.driver.phone_number,
         vehicle: {
-          plate: data.vehicle.licence_plate,
+          plate: data.vehicle.license_plate,
           name: data.vehicle.make + data.vehicle.model
         }
       }
