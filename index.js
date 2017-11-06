@@ -8,7 +8,7 @@ module.exports = class UberHandler {
     this.token = config.token || "";
     this.access_token = config.access_token || "";
     this.sandbox = config.sandbox || false;
-    this.baseURL = process.env.NODE_ENV == 'development' ? process.env.DEV_BASE_URL : this.sandbox
+    this.baseURL = process.env.NODE_ENV == 'development' ? process.env.DEV_BASE_URL + '/uber' : this.sandbox
       ? "https://sandbox-api.uber.com/v1.2"
       : "https://api.uber.com/v1.2";
 
