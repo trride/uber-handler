@@ -1,4 +1,4 @@
-requrie('dotenv').config()
+require('dotenv').config()
 const Axios = require("axios");
 const queryString = require("query-string");
 
