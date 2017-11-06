@@ -127,7 +127,7 @@ module.exports = class UberHandler {
         'no_drivers_available': {
           status: 'not_found',
           ...payload
-        }
+        },
         'accepted': {
           status: 'accepted',
           ...payload
