@@ -1,3 +1,4 @@
+requrie('dotenv').config()
 const Axios = require("axios");
 const queryString = require("query-string");
 
@@ -7,14 +8,14 @@ module.exports = class UberHandler {
     this.token = config.token || "";
     this.access_token = config.access_token || "";
     this.sandbox = config.sandbox || false;
-    this.baseURL = this.sandbox
-      ? "https://sandbox-api.uber.com"
-      : "https://api.uber.com";
+    this.baseURL = process.env.NODE_ENV == 'development' ? process.env.DEV_BASE_URL : this.sandbox
+      ? "https://sandbox-api.uber.com/v1.2"
+      : "https://api.uber.com/v1.2";
 
     this.uberMotorProductId = "89da0988-cb4f-4c85-b84f-aac2f5115068";
 
     this.axios = Axios.create({
-      baseURL: this.baseURL + "/v1.2",
+      baseURL: this.baseURL,
       headers: {
         Authorization: `Bearer ${this.access_token}`,
         "Content-Type": "application/json",
