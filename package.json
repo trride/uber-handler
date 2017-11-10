@@ -1,5 +1,5 @@
 {
-  "name": "uber-handler",
+  "name": "@tride/uber-handler",
   "version": "0.4.11",
   "description": "",
   "main": "index.js",
@@ -15,5 +15,8 @@
   "devDependencies": {
     "dotenv": "^4.0.0",
     "np": "^2.16.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
